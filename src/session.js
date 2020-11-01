@@ -3,11 +3,17 @@ const local = new Proxy(sessionStorage, {
     set: (target, p, v) => target[p] = JSON.stringify(v),
 })
 
-/**@type {Set<number>} */
-export const liked = new Set(local.liked || [])
+const session = {
+    /**@type {Set<number>} */
+    liked: new Set(local.liked || []),
+    /**@type {Set<number>} */
+    commented: new Set(local.commented || []),
+}
 
 window.addEventListener('unload', () => {
     if (window.DONOTSAVE) return
     if (window.CLEAR) return sessionStorage.clear()
-    local.liked = [...liked]
+    local.liked = [...session.liked]
+    local.commented = [...session.commented]
 })
+export default session

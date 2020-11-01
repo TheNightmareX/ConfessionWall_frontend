@@ -12,7 +12,7 @@
         <v-text-field
           v-model="data[objName].nickname"
           :label="`${name}的昵称`"
-          :color="colorMap[data[objName].sex]"
+          :color="colorMapping[data[objName].sex]"
           counter="10"
           :rules="[
             (v) => !!v || '此项必填',
@@ -22,7 +22,7 @@
         <v-text-field
           v-model="data[objName].realname"
           :label="`${name}的姓名(不会显示)`"
-          :color="colorMap[data[objName].sex]"
+          :color="colorMapping[data[objName].sex]"
           counter="3"
           :rules="[
             (v) => !!v || '此项必填',
@@ -35,7 +35,7 @@
           v-model="data[objName].sex"
           :items="sexChoices"
           :label="`${name}的性别`"
-          :color="colorMap[data[objName].sex]"
+          :color="colorMapping[data[objName].sex]"
         ></v-select>
       </div>
 
@@ -45,15 +45,15 @@
         rows="1"
         auto-grow
         clearable
-        label="我要对TA说："
+        label="我要对TA说:"
         color="orange"
         :rules="[(v) => !!v || '此项必填']"
       >
       </v-textarea>
 
-      <v-btn color="primary" block @click="submit" :disabled="disabled"
-        >表白!</v-btn
-      >
+      <v-btn color="primary" block @click="submit" :disabled="disabled">
+        表白!
+      </v-btn>
     </v-form>
   </div>
 </template>
@@ -61,7 +61,7 @@
 <script>
 import { createConfession } from "../apis";
 
-const sexMap = {
+const sexMapping = {
   ...{ m: "男", f: "女", "": "保密" },
   ...{ 男: "m", 女: "f", 保密: "" },
 };
@@ -71,7 +71,7 @@ export default {
 
   data() {
     return {
-      colorMap: {
+      colorMapping: {
         保密: "white",
         男: "blue",
         女: "purple",
@@ -97,21 +97,12 @@ export default {
   methods: {
     async submit() {
       if (this.$refs.form.validate()) {
-        this.disabled = true;
         try {
-          await createConfession({
-            sender: {
-              nickname: this.data.sender.nickname,
-              realname: this.data.sender.realname,
-              sex: sexMap[this.data.sender.sex],
-            },
-            receiver: {
-              nickname: this.data.receiver.nickname,
-              realname: this.data.receiver.realname,
-              sex: sexMap[this.data.receiver.sex],
-            },
-            text: this.data.text,
-          });
+          this.disabled = true;
+          const { sender, receiver, text } = this.data;
+          sender.sex = sexMapping[sender.sex];
+          receiver.sex = sexMapping[receiver.sex];
+          await createConfession(sender, receiver, text);
           this.disabled = false;
           this.$router.push({ name: "home" });
         } catch {

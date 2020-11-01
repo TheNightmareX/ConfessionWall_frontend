@@ -11,6 +11,7 @@ export default new Vuetify({
             dark: {
                 primary: colors.purple.darken4,
                 accent: colors.orange,
+                error: colors.deepOrange,
             }
         },
         dark: true,
