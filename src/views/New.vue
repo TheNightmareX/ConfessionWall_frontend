@@ -2,7 +2,7 @@
   <div>
     <v-form id="form" ref="form">
       <div
-        class="mb-10"
+        class="mb-3"
         v-for="[id, name, objName] in [
           [1, '你', 'sender'],
           [2, 'TA', 'receiver'],
@@ -36,6 +36,7 @@
           :items="sexChoices"
           :label="`${name}的性别`"
           :color="colorMapping[data[objName].sex]"
+          :item-color="colorMapping[data[objName].sex]"
         ></v-select>
       </div>
 
