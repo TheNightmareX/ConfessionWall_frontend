@@ -1,0 +1,72 @@
+<template>
+  <div>
+    <v-card>
+      <v-card-title>
+        <span :class="senderColorClass">
+          {{ sender.nickname }}
+        </span>
+
+        <v-icon color="red">mdi-heart</v-icon>
+
+        <span :class="receiverColorClass">
+          {{ receiver.nickname }}
+        </span>
+      </v-card-title>
+
+      <v-card-subtitle>{{ creationTime | datetime }}</v-card-subtitle>
+
+      <v-card-text>{{ text }}</v-card-text>
+
+      <v-card-actions class="d-flex justify-space-between">
+        <span>
+          <v-btn
+            :color="liked ? 'red' : ''"
+            icon
+            @click="liked ? null : $emit('click-like')"
+          >
+            <v-icon>mdi-thumb-up</v-icon>
+          </v-btn>
+          <span>{{ likes }}</span>
+        </span>
+        <span>
+          <v-btn icon @click="$emit('click-comment')">
+            <v-icon>mdi-comment</v-icon>
+          </v-btn>
+          <span>{{ comments }}</span>
+        </span>
+      </v-card-actions>
+    </v-card>
+
+    <div>
+      <slot></slot>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: "ConfessionCard",
+
+  props: {
+    sender: Object,
+    receiver: Object,
+    text: String,
+    likes: Number,
+    comments: Number,
+    liked: Boolean,
+    creationTime: String,
+  },
+
+  computed: {
+    senderColorClass() {
+      return this.sender.sex == "m" ? "blue--text" : "pink--text";
+    },
+    receiverColorClass() {
+      return this.receiver.sex == "m" ? "blue--text" : "pink--text";
+    },
+  },
+};
+</script>
+
+<style>
+</style>
