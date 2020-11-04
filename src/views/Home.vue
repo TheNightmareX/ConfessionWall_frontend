@@ -9,25 +9,29 @@
       ></v-progress-linear>
     </transition>
 
+    <v-btn
+      style="bottom: 72px"
+      color="accent"
+      fab
+      fixed
+      right
+      icon
+      @click="$vuetify.goTo(0)"
+    >
+      <v-icon>mdi-chevron-up</v-icon>
+    </v-btn>
+
     <div id="content">
       <div class="mb-4" v-for="confession of confessions" :key="confession.id">
         <v-card>
           <v-card-title>
-            <span
-              :class="
-                confession.sender.sex == 'm' ? 'blue--text' : 'pink--text'
-              "
-            >
+            <span :class="confession.sender.sex | sexColor">
               {{ confession.sender.nickname }}
             </span>
 
             <v-icon color="red">mdi-heart</v-icon>
 
-            <span
-              :class="
-                confession.receiver.sex == 'm' ? 'blue--text' : 'pink--text'
-              "
-            >
+            <span :class="confession.receiver.sex | sexColor">
               {{ confession.receiver.nickname }}
             </span>
           </v-card-title>
@@ -115,8 +119,8 @@ import {
   getComments,
   createLike,
   createComment,
-} from "../apis";
-import session from "../session";
+} from "../apis/index";
+import session from "../storage/index";
 import dayjs from "dayjs";
 
 /**
@@ -125,7 +129,6 @@ import dayjs from "dayjs";
  */
 
 export default {
-  name: "Home",
   data() {
     return {
       loading: false,
@@ -229,6 +232,9 @@ export default {
   filters: {
     datetime(date) {
       return dayjs(date).format("YYYY-MM-DD HH:mm:ss");
+    },
+    sexColor(sex) {
+      return sex == "m" ? "blue--text" : "pink--text";
     },
   },
 

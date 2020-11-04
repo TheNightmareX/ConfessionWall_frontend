@@ -8,7 +8,7 @@ const instance = axios.create({
 
 /**
  * 
- * @typedef {{ id: number, sender: { nickname: string, sex: 'm' | 'f' }, receiver: data[0]['sender'], creation_time: string, text: string, likes: number, comments: number }} Confession
+ * @typedef {{ id: number, sender: { nickname: string, sex: 'm' | 'f' }, receiver: Confession['sender'], creation_time: string, text: string, likes: number, comments: number }} Confession
  * @returns {Promise<{ data: Confession[] , total_pages: number }>}
  */
 export async function getConfessions(page = 1) {
