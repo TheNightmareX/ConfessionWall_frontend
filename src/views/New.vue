@@ -46,7 +46,7 @@
         rows="1"
         auto-grow
         clearable
-        label="我要对TA说:"
+        label="你想对TA说:"
         color="orange"
         :rules="[(v) => !!v || '此项必填']"
       >
