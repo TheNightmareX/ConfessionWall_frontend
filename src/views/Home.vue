@@ -22,33 +22,31 @@
     </v-btn>
 
     <div id="content">
-      <confession-card
-        class="mb-4"
-        v-bind="item"
-        :liked="liked.has(item.id)"
-        v-for="item of confessions"
-        :key="item.id"
-        @click-like="like(item)"
-        @click-comment="loadComments(item)"
-      >
-        <comments
-          v-bind="comments[item.id]"
-          :commented="commented.has(item.id)"
-          @click-pagination="loadComments(item, $event)"
-          @submit-comment="comment(item, $event)"
-        ></comments>
-      </confession-card>
-
-      <v-pagination
-        v-model="curPage"
-        :length="totalPages"
-        @input="loadConfessions"
-      ></v-pagination>
-
-      <v-snackbar color="error" top v-model="snackbar.show">{{
-        snackbar.text
-      }}</v-snackbar>
+      <transition-group name="items">
+        <confession-card
+          class="mb-4"
+          v-bind="item"
+          :liked="liked.has(item.id)"
+          v-for="item of confessions"
+          :key="item.id"
+          @click-like="like(item)"
+          @click-comment="loadComments(item)"
+        >
+          <comments
+            v-bind="comments[item.id]"
+            :commented="commented.has(item.id)"
+            @click-pagination="loadComments(item, $event)"
+            @submit-comment="comment(item, $event)"
+          ></comments>
+        </confession-card>
+      </transition-group>
     </div>
+
+    <div ref="trigger"></div>
+
+    <v-snackbar color="error" top v-model="snackbar.show">{{
+      snackbar.text
+    }}</v-snackbar>
   </div>
 </template>
 
@@ -88,8 +86,8 @@ export default {
       comments: {},
       liked: session.liked,
       commented: session.commented,
-      curPage: 1,
-      totalPages: 0,
+      curPage: 0,
+      totalPages: undefined,
     };
   },
 
@@ -113,13 +111,21 @@ export default {
       }
     },
     async loadConfessions() {
+      if (this.loading || this.curPage >= this.totalPages) return;
       try {
         this.loading = true;
+        this.curPage++
         const { data, totalPages } = await getConfessions(this.curPage);
-        this.confessions = data;
+        for (const item of Object.values(data)) {
+          this.confessions.push(item);
+          await new Promise((resolve) => {
+            setTimeout(() => resolve(), 100);
+          });
+        }
         this.totalPages = totalPages;
-      } catch {
+      } catch (e) {
         this.alert("数据获取失败");
+        console.error(e);
       } finally {
         this.loading = false;
       }
@@ -173,6 +179,15 @@ export default {
   created() {
     this.loadConfessions();
   },
+
+  mounted() {
+    const observer = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) {
+        this.loadConfessions()
+      }
+    })
+    observer.observe(this.$refs.trigger)
+  }
 };
 </script>
 
@@ -183,6 +198,14 @@ export default {
 
 #content {
   margin: 30px 10%;
+}
+
+.items-enter {
+  transform: translateY(-30px);
+  opacity: 0;
+}
+.items-enter-active {
+  transition: all 1s;
 }
 
 .progress-leave-active {

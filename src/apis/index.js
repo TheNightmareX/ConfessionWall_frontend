@@ -32,7 +32,7 @@ const instance = axios.create({
  * @property {number} likes
  * @property {number} comments
  * @property {string} creationTime
- * @returns {Promise<{ data: Confession[] , totalPages: number }>}
+ * @returns {Promise<{ data: Object<number, Confession> , totalPages: number }>}
  */
 export async function getConfessions(page = 1) {
   return toCamelCase(
@@ -63,7 +63,7 @@ export async function createLike(confession) {
  *
  * @typedef {{ id: number, text: string, creationTime: string }} Comment
  * @param {number} confession
- * @returns {Promise<{ data: Comment[], totalPages: number }>}
+ * @returns {Promise<{ data: Object<number, Comment>, totalPages: number }>}
  */
 export async function getComments(confession, page = 1) {
   return toCamelCase((
