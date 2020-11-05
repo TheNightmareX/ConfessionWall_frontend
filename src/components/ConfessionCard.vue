@@ -2,13 +2,13 @@
   <div>
     <v-card>
       <v-card-title>
-        <span :class="senderColorClass">
+        <span :class="sender.sex | sexColor">
           {{ sender.nickname }}
         </span>
 
         <v-icon color="red">mdi-heart</v-icon>
 
-        <span :class="receiverColorClass">
+        <span :class="receiver.sex | sexColor">
           {{ receiver.nickname }}
         </span>
       </v-card-title>
@@ -57,14 +57,16 @@ export default {
     creationTime: String,
   },
 
-  computed: {
-    senderColorClass() {
-      return this.sender.sex == "m" ? "blue--text" : "pink--text";
-    },
-    receiverColorClass() {
-      return this.receiver.sex == "m" ? "blue--text" : "pink--text";
-    },
-  },
+  filters: {
+    sexColor(v) {
+      switch (v) {
+        case 'm': return "blue--text"
+        case 'f': return 'pink--text'
+        case '': return 'white-text'
+      }
+      return null
+    }
+  }
 };
 </script>
 
