@@ -42,7 +42,7 @@
       </transition-group>
     </div>
 
-    <div ref="trigger"></div>
+    <div ref="trigger" style="height: 10px"></div>
 
     <v-snackbar color="error" top v-model="snackbar.show">{{
       snackbar.text
@@ -51,26 +51,32 @@
 </template>
 
 <script>
-import ConfessionCard from "../components/ConfessionCard.vue";
-import Comments from "../components/Comments.vue";
+import Vue from "vue";
+
+import ConfessionCard from "../../components/ConfessionCard.vue";
+import Comments from "../../components/Comments.vue";
 
 import {
   getConfessions,
   getComments,
   createLike,
   createComment,
-} from "../apis/index";
-import session from "../storage/index";
+} from "../../apis/index";
+import session from "../../storage/index";
 
 /**
- * @typedef {import('../apis/index').Confession} Confession
- * @typedef {import('../apis/index').Comment} Comment
+ * @typedef {import('../../apis/index').Confession} Confession
+ * @typedef {import('../../apis/index').Comment} Comment
  */
 
 export default {
   components: {
     ConfessionCard,
     Comments,
+  },
+
+  props: {
+    bridge: Vue,
   },
 
   data() {
@@ -82,13 +88,20 @@ export default {
       },
       /**@type {Confession[]} */
       confessions: [],
-      /**@type {Object<number, { comments: Comment[], curPage: number, totalPages: number }>} */
+      /**@type {Object<number, { comments: Comment[], totalPages: number }>} */
       comments: {},
       liked: session.liked,
       commented: session.commented,
-      curPage: 0,
+      nextPage: 1,
       totalPages: undefined,
+      sort: undefined,
     };
+  },
+
+  watch: {
+    sort() {
+      this.loadConfessions(false);
+    },
   },
 
   methods: {
@@ -110,18 +123,27 @@ export default {
         this.loading = false;
       }
     },
-    async loadConfessions() {
-      if (this.loading || this.curPage >= this.totalPages) return;
+    async loadConfessions(append = true) {
+      if (this.loading) return;
+      if (!append) {
+        this.nextPage = 1;
+        this.totalPages = undefined;
+        this.confessions = [];
+      }
+      if (this.nextPage > this.totalPages) return;
       try {
         this.loading = true;
-        this.curPage++
-        const { data, totalPages } = await getConfessions(this.curPage);
+        const { data, totalPages } = await getConfessions(
+          this.nextPage,
+          this.sort
+        );
         for (const item of Object.values(data)) {
           this.confessions.push(item);
           await new Promise((resolve) => {
             setTimeout(() => resolve(), 100);
           });
         }
+        this.nextPage++;
         this.totalPages = totalPages;
       } catch (e) {
         this.alert("数据获取失败");
@@ -177,17 +199,19 @@ export default {
   },
 
   created() {
-    this.loadConfessions();
+    this.bridge.$off("sort");
+    this.bridge.$on("sort", (sort) => (this.sort = sort));
   },
 
   mounted() {
-    const observer = new IntersectionObserver(entries => {
+    // Set up trigger to load confessions when user can see the bottom.
+    const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
-        this.loadConfessions()
+        this.loadConfessions();
       }
-    })
-    observer.observe(this.$refs.trigger)
-  }
+    });
+    observer.observe(this.$refs.trigger);
+  },
 };
 </script>
 

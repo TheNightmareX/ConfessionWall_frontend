@@ -2,6 +2,10 @@
   <v-app>
     <v-app-bar color="primary" dark app>
       <v-toolbar-title>表白墙</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <transition>
+        <router-view name="bar" :bridge="bridge"></router-view>
+      </transition>
     </v-app-bar>
 
     <v-bottom-navigation background-color="primary" app shift>
@@ -17,23 +21,25 @@
 
     <v-main>
       <transition>
-        <router-view></router-view>
+        <router-view :bridge="bridge"></router-view>
       </transition>
     </v-main>
   </v-app>
 </template>
 
 <script>
+import Vue from "vue";
+
 export default {
   name: "App",
 
   components: {},
 
   data() {
-    return {};
+    return {
+      bridge: new Vue(),
+    };
   },
-
-  methods: {},
 };
 </script>
 

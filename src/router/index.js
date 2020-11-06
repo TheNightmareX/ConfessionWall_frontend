@@ -1,7 +1,8 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import Home from "../views/Home.vue";
-import New from "../views/New.vue";
+import Home from "../views/Home/index.vue";
+import Home_Bar from "../views/Home/bar.vue";
+import New from "../views/New/index.vue";
 
 Vue.use(VueRouter);
 
@@ -14,7 +15,10 @@ export default new VueRouter({
     {
       name: "home",
       path: "/home/",
-      component: Home,
+      components: {
+        default: Home,
+        bar: Home_Bar,
+      },
     },
     {
       name: "new",

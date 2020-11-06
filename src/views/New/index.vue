@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import { createConfession } from "../apis/index";
+import { createConfession } from "../../apis/index";
 
 const sexMapping = {
   ...{ m: "男", f: "女", "": "保密" },
