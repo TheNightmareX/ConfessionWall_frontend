@@ -16,7 +16,7 @@
     </v-bottom-navigation>
 
     <v-main>
-      <transition mode="out-in">
+      <transition>
         <router-view></router-view>
       </transition>
     </v-main>
