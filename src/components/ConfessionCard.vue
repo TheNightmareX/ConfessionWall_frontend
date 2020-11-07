@@ -15,7 +15,7 @@
 
       <v-card-subtitle>{{ creationTime | datetime }}</v-card-subtitle>
 
-      <v-card-text>{{ text }}</v-card-text>
+      <v-card-text style="white-space: pre;">{{ text }}</v-card-text>
 
       <v-card-actions class="d-flex justify-space-between">
         <span>
