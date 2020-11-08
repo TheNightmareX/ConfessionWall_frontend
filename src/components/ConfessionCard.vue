@@ -15,7 +15,9 @@
 
       <v-card-subtitle>{{ creationTime | datetime }}</v-card-subtitle>
 
-      <v-card-text style="white-space: pre;">{{ text }}</v-card-text>
+      <v-card-text style="white-space: pre-line;">{{
+        text
+      }}</v-card-text>
 
       <v-card-actions class="d-flex justify-space-between">
         <span>
@@ -48,6 +50,7 @@ export default {
   name: "ConfessionCard",
 
   props: {
+    id: Number,
     sender: Object,
     receiver: Object,
     text: String,
@@ -60,13 +63,16 @@ export default {
   filters: {
     sexColor(v) {
       switch (v) {
-        case 'm': return "blue--text"
-        case 'f': return 'pink--text'
-        case '': return 'white-text'
+        case "m":
+          return "blue--text";
+        case "f":
+          return "pink--text";
+        case "":
+          return "white-text";
       }
-      return null
-    }
-  }
+      return null;
+    },
+  },
 };
 </script>
 
