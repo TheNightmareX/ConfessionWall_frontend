@@ -1,6 +1,6 @@
 <template>
   <div v-if="loaded">
-    <v-card>
+    <v-card @click="handleClick" :ripple="false">
       <v-card-title>
         <span :class="data.sender.sex | sexColor">
           {{ data.sender.nickname }}
@@ -17,7 +17,7 @@
 
       <v-card-text style="white-space: pre-line">{{ data.text }}</v-card-text>
 
-      <v-card-actions class="d-flex justify-space-between">
+      <v-card-actions ref="actions" class="d-flex justify-space-between">
         <span>
           <v-btn
             :color="liked ? 'red' : ''"
@@ -77,6 +77,7 @@ export default {
   props: {
     /**ID or data of a confession */
     confession: [Number, Object],
+    to: [String, Object],
   },
 
   data() {
@@ -104,6 +105,14 @@ export default {
         this.liking = false;
       }
     },
+    /**
+     * 
+     * @param {MouseEvent} ev
+     */
+    handleClick(ev) {
+      if (!this.to || this.$refs.actions.contains(ev.target)) return
+      this.$router.push(this.to)
+    },
   },
 
   filters: {
@@ -124,7 +133,6 @@ export default {
     if (typeof this.confession == "number") {
       this.id = this.confession;
       this.data = await getConfession(this.confession);
-      console.debug(this.data)
     } else {
       this.data = this.confession;
       this.id = this.data.id;

@@ -28,6 +28,7 @@
           :confession="item"
           v-for="item of confessions"
           :key="item.id"
+          :to="{ name: 'details', params: { id: item.id } }"
         >
         </confession-card>
       </transition-group>
