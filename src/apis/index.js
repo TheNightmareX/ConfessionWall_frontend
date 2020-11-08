@@ -39,7 +39,7 @@ const instance = axios.create({
  * @returns {Confession}
  */
 export async function getConfession(id) {
-  return toCamelCase(await instance.get("confessions", { params: { id } }));
+  return toCamelCase((await instance.get("confessions", { params: { id } })).data);
 }
 /**
  *

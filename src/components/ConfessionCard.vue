@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="loaded">
     <v-card>
       <v-card-title>
         <span :class="data.sender.sex | sexColor">
@@ -50,7 +50,10 @@
       v-if="commentsOpened"
       :confession="id"
       @load="commentsLoading = false"
-      @error="commentsLoading = false; commentsOpened = false"
+      @error="
+        commentsLoading = false;
+        commentsOpened = false;
+      "
     ></comments>
   </div>
 </template>
@@ -73,7 +76,7 @@ export default {
 
   props: {
     /**ID or data of a confession */
-    confession: Object,
+    confession: [Number, Object],
   },
 
   data() {
@@ -85,6 +88,7 @@ export default {
       liked: undefined,
       commentsLoading: false,
       commentsOpened: false,
+      loaded: false,
     };
   },
 
@@ -120,10 +124,12 @@ export default {
     if (typeof this.confession == "number") {
       this.id = this.confession;
       this.data = await getConfession(this.confession);
+      console.debug(this.data)
     } else {
       this.data = this.confession;
       this.id = this.data.id;
     }
+    this.loaded = true;
   },
 };
 </script>

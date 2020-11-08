@@ -38,8 +38,7 @@
 import session from "../storage/index";
 import { createComment, getComments } from "../apis/index";
 
-/**@typedef {import("../apis/index").Comment} Comment
- */
+/**@typedef {import("../apis/index").Comment} Comment */
 
 export default {
   name: "Comments",
