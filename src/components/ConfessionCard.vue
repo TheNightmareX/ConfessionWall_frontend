@@ -137,6 +137,7 @@ export default {
       this.data = this.confession;
       this.id = this.data.id;
     }
+    this.liked = session.liked.has(this.id)
     this.loaded = true;
   },
 };
