@@ -1,5 +1,5 @@
 <template>
-  <v-sheet id="container" class="pb-3" v-if="comments">
+  <v-sheet id="container" class="pb-3">
     <v-list dense two-line>
       <v-list-item v-for="{ id, text, creationTime } of comments" :key="id">
         <v-list-item-content>
@@ -15,7 +15,7 @@
       v-if="totalPages > 1"
       v-model="curPage"
       :length="totalPages"
-      @input="$emit('click-pagination', curPage)"
+      @input="load()"
     >
     </v-pagination>
 
@@ -24,39 +24,74 @@
       v-model="commentInput"
       color="accent"
       class="mx-5"
+      :disabled="commenting"
+      :loading="commenting"
       label="留下你的想法:(Enter键提交)"
       counter="15"
       :rules="[(v) => (v ? v.length <= 15 : true) || '最多15字']"
-      :disabled="disabled"
       @keypress.enter="comment()"
     ></v-text-field>
   </v-sheet>
 </template>
 
 <script>
+import session from "../storage/index";
+import { createComment, getComments } from "../apis/index";
+
+/**@typedef {import("../apis/index").Comment} Comment
+ */
+
 export default {
   name: "Comments",
 
   data() {
     return {
-      disabled: false,
+      /**@type {Comment[]} */
+      comments: [],
+      commenting: false,
+      commented: session.commented.has(this.confession),
       commentInput: "",
       curPage: 1,
+      totalPages: undefined,
     };
   },
 
   props: {
-    comments: Object,
-    commented: Boolean,
-    totalPages: Number,
+    confession: Number,
   },
 
   methods: {
-    comment() {
+    async comment() {
       if (this.commentInput.length <= 15) {
-        this.$emit("submit-comment", this.commentInput);
+        try {
+          this.commenting = true;
+          await createComment(this.confession, this.commentInput);
+          this.load(1);
+          session.commented.add(this.confession);
+          this.commented = true;
+        } finally {
+          this.commenting = false;
+        }
       }
     },
+    async load(page) {
+      if (page) this.curPage = page;
+      try {
+        const { data, totalPages } = await getComments(
+          this.confession,
+          this.curPage
+        );
+        this.comments = Object.values(data);
+        this.totalPages = totalPages;
+        this.$emit("load");
+      } catch {
+        this.$emit("error");
+      }
+    },
+  },
+
+  created() {
+    this.load();
   },
 };
 </script>

@@ -32,15 +32,26 @@ const instance = axios.create({
  * @property {number} likes
  * @property {number} comments
  * @property {string} creationTime
+ */
+/**
+ * 
+ * @param {number} id 
+ * @returns {Confession}
+ */
+export async function getConfession(id) {
+  return toCamelCase(await instance.get("confessions", { params: { id } }));
+}
+/**
  *
  * @param {'latest' | 'earlest' | 'hottest' | 'coldest'}
  * @returns {Promise<{ data: Object<number, Confession> , totalPages: number }>}
  */
 export async function getConfessions(page = 1, sort = "latest") {
   return toCamelCase(
-    (await instance.get("confessions", { params: { page, sort } })).data
+    (await instance.get("confessions/pages", { params: { page, sort } })).data
   );
 }
+
 /**
  *
  * @param {{ nickname: string, realname: string, sex: 'm' | 'f' }} sender
@@ -70,7 +81,7 @@ export async function createLike(confession) {
 export async function getComments(confession, page = 1) {
   return toCamelCase(
     (
-      await instance.get("confessions/comments", {
+      await instance.get("confessions/comments/pages", {
         params: { confession, page },
       })
     ).data

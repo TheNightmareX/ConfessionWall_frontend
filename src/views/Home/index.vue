@@ -25,19 +25,11 @@
       <transition-group name="items">
         <confession-card
           class="mb-4"
-          v-bind="item"
-          :liked="liked.has(item.id)"
+          :confession="item"
           v-for="item of confessions"
           :key="item.id"
-          @click-like="like(item)"
-          @click-comment="loadComments(item)"
+          @like="like(item)"
         >
-          <comments
-            v-bind="comments[item.id]"
-            :commented="commented.has(item.id)"
-            @click-pagination="loadComments(item, $event)"
-            @submit-comment="comment(item, $event)"
-          ></comments>
         </confession-card>
       </transition-group>
     </div>
@@ -54,15 +46,8 @@
 import Vue from "vue";
 
 import ConfessionCard from "../../components/ConfessionCard.vue";
-import Comments from "../../components/Comments.vue";
 
-import {
-  getConfessions,
-  getComments,
-  createLike,
-  createComment,
-} from "../../apis/index";
-import session from "../../storage/index";
+import { getConfessions } from "../../apis/index";
 
 /**
  * @typedef {import('../../apis/index').Confession} Confession
@@ -72,7 +57,6 @@ import session from "../../storage/index";
 export default {
   components: {
     ConfessionCard,
-    Comments,
   },
 
   props: {
@@ -88,10 +72,6 @@ export default {
       },
       /**@type {Confession[]} */
       confessions: [],
-      /**@type {Object<number, { comments: Comment[], totalPages: number }>} */
-      comments: {},
-      liked: session.liked,
-      commented: session.commented,
       nextPage: 1,
       totalPages: undefined,
       sort: undefined,
@@ -105,24 +85,6 @@ export default {
   },
 
   methods: {
-    /**
-     *
-     * @param {Confession} confession
-     */
-    async like(confession) {
-      try {
-        this.loading = true;
-        confession.likes++;
-        this.liked.add(confession.id);
-        await createLike(confession.id);
-      } catch {
-        confession.likes--;
-        this.liked.delete(confession.id);
-        this.alert("点赞失败");
-      } finally {
-        this.loading = false;
-      }
-    },
     async loadConfessions(append = true) {
       if (this.loading) return;
       if (!append) {
@@ -148,46 +110,6 @@ export default {
       } catch (e) {
         this.alert("数据获取失败");
         console.error(e);
-      } finally {
-        this.loading = false;
-      }
-    },
-    /**
-     *
-     * @param {Confession} confession
-     */
-    async loadComments(confession, page = 1) {
-      const id = confession.id;
-      try {
-        this.loading = true;
-        const { data, totalPages } = await getComments(id, page);
-        this.$set(this.comments, id, {
-          comments: data,
-          totalPages,
-        });
-      } catch {
-        this.alert("获取评论失败");
-      } finally {
-        this.loading = false;
-      }
-    },
-    /**
-     *
-     * @param {Confession} confession
-     * @param {string} text
-     */
-    async comment(confession, text) {
-      const id = confession.id;
-      if (!text || text.length > 15) return;
-      try {
-        this.loading = true;
-        this.commented.add(id);
-        await createComment(id, text);
-        this.loadComments(confession);
-        confession.comments++;
-      } catch {
-        this.alert("评论失败");
-        this.commented.delete(id);
       } finally {
         this.loading = false;
       }
