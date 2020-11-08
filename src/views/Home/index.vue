@@ -65,6 +65,8 @@ export default {
 
   data() {
     return {
+      /**whether user can see the bottom */
+      needLoad: false,
       loading: false,
       snackbar: {
         show: false,
@@ -80,18 +82,22 @@ export default {
 
   watch: {
     sort() {
-      this.loadConfessions(false);
+      this.reset();
+      this.loadNextPage();
     },
   },
 
   methods: {
-    async loadConfessions(append = true) {
+    reset() {
+      this.nextPage = 1;
+      this.totalPages = undefined;
+      this.confessions = [];
+    },
+    /**
+     * Keep loading the next page until `needLoad == false`. Do nothing if it is already loading.
+     */
+    async loadNextPage() {
       if (this.loading) return;
-      if (!append) {
-        this.nextPage = 1;
-        this.totalPages = undefined;
-        this.confessions = [];
-      }
       if (this.nextPage > this.totalPages) return;
       try {
         this.loading = true;
@@ -113,6 +119,7 @@ export default {
       } finally {
         this.loading = false;
       }
+      if (this.needLoad) this.loadNextPage();
     },
     alert(msg) {
       this.snackbar.text = msg;
@@ -126,10 +133,13 @@ export default {
   },
 
   mounted() {
-    // Set up trigger to load confessions when user can see the bottom.
+    // Set up the trigger to load confessions when user can see the bottom.
     const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
-        this.loadConfessions();
+        this.needLoad = true;
+        this.loadNextPage();
+      } else {
+        this.needLoad = false;
       }
     });
     observer.observe(this.$refs.trigger);
