@@ -28,7 +28,6 @@
           :confession="item"
           v-for="item of confessions"
           :key="item.id"
-          @like="like(item)"
         >
         </confession-card>
       </transition-group>
