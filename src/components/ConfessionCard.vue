@@ -106,26 +106,22 @@ export default {
       }
     },
     /**
-     * 
+     *
      * @param {MouseEvent} ev
      */
     handleClick(ev) {
-      if (!this.to || this.$refs.actions.contains(ev.target)) return
-      this.$router.push(this.to)
+      if (!this.to || this.$refs.actions.contains(ev.target)) return;
+      this.$router.push(this.to);
     },
   },
 
   filters: {
     sexColor(v) {
-      switch (v) {
-        case "m":
-          return "blue--text";
-        case "f":
-          return "pink--text";
-        case "":
-          return "white-text";
-      }
-      return null;
+      return {
+        m: "blue--text",
+        f: "pink--text",
+        "": "white--text",
+      }[v];
     },
   },
 
@@ -137,7 +133,7 @@ export default {
       this.data = this.confession;
       this.id = this.data.id;
     }
-    this.liked = session.liked.has(this.id)
+    this.liked = session.liked.has(this.id);
     this.loaded = true;
   },
 };

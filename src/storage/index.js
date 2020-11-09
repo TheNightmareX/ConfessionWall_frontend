@@ -1,24 +1,25 @@
-const local = new Proxy(sessionStorage, {
-  get: (target, p) => (p in target ? JSON.parse(target[p]) : undefined),
-  set: (target, p, v) => {
-    target[p] = JSON.stringify(v);
-  },
-});
+import { session } from "./serializers";
 
-const session = {
+const storage = {
   /** @type {Set<number>} */
-  liked: new Set(local.liked || []),
+  liked: new Set(session.liked || []),
   /** @type {Set<number>} */
-  commented: new Set(local.commented || []),
+  commented: new Set(session.commented || []),
+  confessionCount: session.confessionCount || 0,
+};
+
+let save = true;
+
+window.reset = () => {
+  save = false;
+  location.reload();
 };
 
 window.addEventListener("unload", () => {
-  if (window.DONOTSAVE) return;
-  if (window.CLEAR) {
-    sessionStorage.clear();
-    return;
-  }
-  local.liked = [...session.liked];
-  local.commented = [...session.commented];
+  if (!save) return;
+  session.liked = [...storage.liked];
+  session.commented = [...storage.commented];
+  session.confessionCount = storage.confessionCount;
 });
-export default session;
+
+export default storage;

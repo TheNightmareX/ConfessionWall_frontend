@@ -1,95 +1,101 @@
 <template>
-  <div>
-    <v-form id="form" ref="form">
-      <div
-        class="mb-3"
-        v-for="[id, name, objName] in [
-          [1, '你', 'sender'],
-          [2, 'TA', 'receiver'],
+  <v-form id="container" ref="form" :disabled="disabled">
+    <span
+      v-for="[key, name, objName] in [
+        [1, '你', 'sender'],
+        [2, 'TA', 'receiver'],
+      ]"
+      :key="key"
+    >
+      <v-text-field
+        v-model="data[objName].nickname"
+        :label="`${name}的昵称`"
+        :color="data[objName].sex | sexColor"
+        counter="10"
+        :rules="[
+          (v) => !!v || '喂喂喂怎么称呼都不告诉的嘛',
+          (v) => v.length <= 10 || '昵称太长啦',
         ]"
-        :key="id"
+      ></v-text-field>
+      <v-text-field
+        v-model="data[objName].realname"
+        :label="`${name}的姓名(不会显示)`"
+        :color="data[objName].sex | sexColor"
+        counter="3"
+        :rules="[
+          (v) => !!v || '信不过的话随便填就好啦',
+          (v) => v.length <= 3 || '名字太长啦',
+        ]"
       >
-        <v-text-field
-          v-model="data[objName].nickname"
-          :label="`${name}的昵称`"
-          :color="colorMapping[data[objName].sex]"
-          counter="10"
-          :rules="[
-            (v) => !!v || '此项必填',
-            (v) => v.length <= 10 || '至多十个字符',
-          ]"
-        ></v-text-field>
-        <v-text-field
-          v-model="data[objName].realname"
-          :label="`${name}的姓名(不会显示)`"
-          :color="colorMapping[data[objName].sex]"
-          counter="3"
-          :rules="[
-            (v) => !!v || '此项必填',
-            (v) => v.length <= 3 || '至多三个字符',
-          ]"
-        >
-        </v-text-field>
+      </v-text-field>
 
-        <v-select
-          v-model="data[objName].sex"
-          :items="sexChoices"
-          :label="`${name}的性别`"
-          :color="colorMapping[data[objName].sex]"
-          :item-color="colorMapping[data[objName].sex]"
-        ></v-select>
-      </div>
+      <v-select
+        v-model="data[objName].sex"
+        :items="[
+          { value: 'm', text: '大帅比' },
+          { value: 'f', text: '大漂亮' },
+          { value: '', text: '外星生物' },
+        ]"
+        :label="`${name}的品种`"
+        :color="data[objName].sex | sexColor"
+        :item-color="data[objName].sex | sexColor"
+      ></v-select>
+    </span>
 
+    <span>
       <v-textarea
-        class="mb-10"
+        class="mb-5"
         v-model="data.text"
         rows="1"
         auto-grow
         clearable
-        label="你想对TA说:"
-        color="orange"
-        :rules="[(v) => !!v || '此项必填']"
+        counter="520"
+        label="你想对TA说的话"
+        color="accent"
+        :rules="[
+          (v) => !!v || '不想说点什么嘛',
+          (v) => v.length <= 520 || '话太多啦',
+        ]"
       >
       </v-textarea>
+    </span>
 
-      <v-btn color="primary" block @click="submit" :disabled="disabled">
-        表白!
+    <span>
+      <v-btn
+        color="primary"
+        block
+        @click="submit"
+        :loading="loading"
+        :disabled="disabled"
+        >{{ tooMany ? "可真够花心的" : "表白!" }}
       </v-btn>
-    </v-form>
-  </div>
+    </span>
+  </v-form>
 </template>
 
 <script>
 import { createConfession } from "../../apis/index";
-
-const sexMapping = {
-  ...{ m: "男", f: "女", "": "保密" },
-  ...{ 男: "m", 女: "f", 保密: "" },
-};
+import storage from "../../storage/index";
 
 export default {
   data() {
     return {
-      colorMapping: {
-        保密: "white",
-        男: "blue",
-        女: "purple",
-      },
-      sexChoices: ["男", "女", "保密"],
       data: {
         sender: {
           nickname: "",
           realname: "",
-          sex: "男",
+          sex: "m",
         },
         receiver: {
           nickname: "",
           realname: "",
-          sex: "女",
+          sex: "f",
         },
         text: "",
       },
-      disabled: false,
+      tooMany: storage.confessionCount >= 1,
+      disabled: undefined,
+      loading: false,
     };
   },
 
@@ -98,23 +104,41 @@ export default {
       if (this.$refs.form.validate()) {
         try {
           this.disabled = true;
+          this.loading = true;
           const { sender, receiver, text } = this.data;
-          sender.sex = sexMapping[sender.sex];
-          receiver.sex = sexMapping[receiver.sex];
           await createConfession(sender, receiver, text);
-          this.disabled = false;
+          storage.confessionCount++;
           this.$router.push({ name: "home" });
-        } catch {
+        } finally {
           this.disabled = false;
+          this.loading = true;
         }
       }
     },
+  },
+
+  filters: {
+    sexColor(v) {
+      return {
+        "": "white",
+        m: "blue",
+        f: "purple",
+      }[v];
+    },
+  },
+
+  created() {
+    this.disabled = this.tooMany;
   },
 };
 </script>
 
 <style scoped>
-#form {
-  margin: 30px 10%;
+#container {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  justify-content: space-around;
+  padding: 0 10% 10%;
 }
 </style>
