@@ -14,10 +14,7 @@ function toCamelCase(obj) {
 }
 
 const instance = axios.create({
-  baseURL:
-    process.env.NODE_ENV === "production"
-      ? "/api/"
-      : "http://localhost:8000/api/",
+  baseURL: "/api/",
   xsrfCookieName: "csrftoken",
   xsrfHeaderName: "X-CSRFToken",
 });
@@ -34,12 +31,12 @@ const instance = axios.create({
  * @property {string} creationTime
  */
 /**
- * 
- * @param {number} id 
+ *
+ * @param {number} id
  * @returns {Confession}
  */
 export async function getConfession(id) {
-  return toCamelCase((await instance.get("confessions", { params: { id } })).data);
+  return toCamelCase((await instance.get(`confessions/${id}`)).data);
 }
 /**
  *
@@ -48,7 +45,7 @@ export async function getConfession(id) {
  */
 export async function getConfessions(page = 1, sort = "latest") {
   return toCamelCase(
-    (await instance.get("confessions/pages", { params: { page, sort } })).data
+    (await instance.get(`confessions/pages/${page}`, { params: { sort } })).data
   );
 }
 
@@ -59,7 +56,15 @@ export async function getConfessions(page = 1, sort = "latest") {
  * @param {string} text
  */
 export async function createConfession(sender, receiver, text) {
-  await instance.post("confessions", { sender, receiver, text });
+  return await instance.post("confessions", { sender, receiver, text });
+}
+
+/**
+ *
+ * @param {number} id
+ */
+export async function delConfession(id) {
+  return await instance.delete(`confessions/${id}`);
 }
 
 /**
@@ -67,9 +72,7 @@ export async function createConfession(sender, receiver, text) {
  * @param {number} confession
  */
 export async function createLike(confession) {
-  await instance.post("confessions/likes", {
-    confession,
-  });
+  await instance.post(`confessions/${confession}/likes`);
 }
 
 /**
@@ -80,11 +83,8 @@ export async function createLike(confession) {
  */
 export async function getComments(confession, page = 1) {
   return toCamelCase(
-    (
-      await instance.get("confessions/comments/pages", {
-        params: { confession, page },
-      })
-    ).data
+    (await instance.get(`confessions/${confession}/comments/pages/${page}`))
+      .data
   );
 }
 
@@ -94,5 +94,27 @@ export async function getComments(confession, page = 1) {
  * @param {string} text
  */
 export async function createComment(confession, text) {
-  await instance.post("confessions/comments", { confession, text });
+  return await instance.post(`confessions/${confession}/comments`, { text });
+}
+
+/**
+ * 
+ * @param {number} confessions 
+ * @param {number} comment 
+ */
+export async function delComment(confession, comment) {
+  return await instance.delete(`confessions/${confession}/comments/${comment}`)
+}
+
+/**
+ *
+ * @param {string} username
+ * @param {string} password
+ */
+export async function login(username, password) {
+  return await instance.post("auth", { action: "login", username, password });
+}
+
+export async function logout() {
+  return await instance.post("auth", { action: "logout" });
 }

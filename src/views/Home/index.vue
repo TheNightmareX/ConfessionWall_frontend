@@ -45,13 +45,13 @@
 <script>
 import Vue from "vue";
 
-import ConfessionCard from "../../components/ConfessionCard.vue";
+import ConfessionCard from "../../components/ConfessionCard";
 
-import { getConfessions } from "../../apis/index";
+import { getConfessions } from "../../apis";
 
 /**
- * @typedef {import('../../apis/index').Confession} Confession
- * @typedef {import('../../apis/index').Comment} Comment
+ * @typedef {import('../../apis').Confession} Confession
+ * @typedef {import('../../apis').Comment} Comment
  */
 
 export default {

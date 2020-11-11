@@ -23,7 +23,7 @@
             :color="liked ? 'red' : ''"
             :loading="liking"
             icon
-            @click="liked ? null : like()"
+            @click="liked && !authed ? null : like()"
           >
             <v-icon>mdi-thumb-up</v-icon>
           </v-btn>
@@ -43,6 +43,19 @@
           </v-btn>
           <span>{{ data.comments }}</span>
         </span>
+
+        <v-btn
+          v-if="authed"
+          icon
+          fab
+          small
+          absolute
+          :loading="deleting"
+          @click="del"
+          style="top: 3px; right: 3px"
+        >
+          <v-icon>mdi-delete</v-icon>
+        </v-btn>
       </v-card-actions>
     </v-card>
 
@@ -54,17 +67,18 @@
         commentsLoading = false;
         commentsOpened = false;
       "
+      @update="data.comments = $event"
     ></comments>
   </div>
 </template>
 
 <script>
-import Comments from "../components/Comments.vue";
+import Comments from "../components/Comments";
 
-import session from "../storage/index";
-import { createLike, getConfession } from "../apis/index";
+import storage from "../storage";
+import { createLike, getConfession, delConfession } from "../apis";
 
-/**@typedef {import("../apis/index").Confession} Confession
+/**@typedef {import("../apis").Confession} Confession
  */
 
 export default {
@@ -86,11 +100,25 @@ export default {
       /**@type {Confession} */
       data: undefined,
       liking: false,
-      liked: undefined,
       commentsLoading: false,
       commentsOpened: false,
+      deleting: false,
       loaded: false,
     };
+  },
+
+  computed: {
+    authed() {
+      return storage.authed;
+    },
+    liked: {
+      get() {
+        return storage.liked[this.id];
+      },
+      set(v) {
+        this.$set(storage.liked, this.id, v);
+      },
+    },
   },
 
   methods: {
@@ -98,11 +126,20 @@ export default {
       try {
         this.liking = true;
         await createLike(this.id);
-        session.liked.add(this.id);
         this.liked = true;
         this.data.likes++;
       } finally {
         this.liking = false;
+      }
+    },
+    async del() {
+      try {
+        this.deleting = true;
+        await delConfession(this.id);
+        this.$el.remove();
+        this.$destroy();
+      } finally {
+        this.deleting = false;
       }
     },
     /**
@@ -133,7 +170,6 @@ export default {
       this.data = this.confession;
       this.id = this.data.id;
     }
-    this.liked = session.liked.has(this.id);
     this.loaded = true;
   },
 };

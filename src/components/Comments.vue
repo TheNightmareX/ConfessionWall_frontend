@@ -8,6 +8,11 @@
             creationTime | datetime
           }}</v-list-item-subtitle>
         </v-list-item-content>
+        <v-list-item-action>
+          <v-btn icon :loading="statuses.deleting[id]" @click="del(id)">
+            <v-icon>mdi-delete</v-icon>
+          </v-btn>
+        </v-list-item-action>
       </v-list-item>
     </v-list>
 
@@ -20,7 +25,7 @@
     </v-pagination>
 
     <v-text-field
-      v-if="!commented"
+      v-if="authed || !commented"
       v-model="commentInput"
       color="accent"
       class="mx-5"
@@ -35,10 +40,10 @@
 </template>
 
 <script>
-import session from "../storage/index";
-import { createComment, getComments } from "../apis/index";
+import storage from "../storage";
+import { createComment, getComments, delComment } from "../apis";
 
-/**@typedef {import("../apis/index").Comment} Comment */
+/**@typedef {import("../apis").Comment} Comment */
 
 export default {
   name: "Comments",
@@ -48,11 +53,23 @@ export default {
       /**@type {Comment[]} */
       comments: [],
       commenting: false,
-      commented: session.commented.has(this.confession),
       commentInput: "",
       curPage: 1,
       totalPages: undefined,
+      statuses: {
+        deleting: {},
+      },
     };
+  },
+
+  computed: {
+    /**@returns {boolean} */
+    commented() {
+      return storage.commented[this.confession];
+    },
+    authed() {
+      return storage.authed;
+    },
   },
 
   props: {
@@ -65,14 +82,33 @@ export default {
         try {
           this.commenting = true;
           await createComment(this.confession, this.commentInput);
-          this.load(1);
-          session.commented.add(this.confession);
-          this.commented = true;
+          await this.load(1);
+          this.$set(storage.commented, this.confession, true);
+          this.$set(storage.commented, this.confession, true);
+          this.$emit("update", this.comments.length);
         } finally {
           this.commenting = false;
         }
       }
     },
+    /**
+     *
+     * @param {number} id
+     */
+    async del(id) {
+      try {
+        this.$set(this.statuses.deleting, id, true);
+        await delComment(this.confession, id);
+        await this.load(1);
+        this.$emit("update", this.comments.length);
+      } finally {
+        this.statuses.deleting[id] = false;
+      }
+    },
+    /**
+     * Get the current page from the pagination and load the comments.
+     * Set the current page if param `page` is provided.
+     */
     async load(page) {
       if (page) this.curPage = page;
       try {

@@ -17,11 +17,17 @@
         </v-list-item-group>
       </v-list>
     </v-menu>
+
+    <v-btn v-if="authed" icon :loading="loggingOut" @click="logout">
+      <v-icon>mdi-logout</v-icon>
+    </v-btn>
   </span>
 </template>
 
 <script>
 import Vue from "vue";
+import storage from "../../storage";
+import { logout } from "../../apis";
 
 export default {
   props: {
@@ -31,7 +37,26 @@ export default {
   data() {
     return {
       sort: "latest",
+      loggingOut: false,
     };
+  },
+
+  computed: {
+    authed() {
+      return storage.authed;
+    },
+  },
+
+  methods: {
+    async logout() {
+      try {
+        this.loggingOut = true;
+        await logout();
+        storage.authed = false;
+      } finally {
+        this.loggingOut = false;
+      }
+    },
   },
 };
 </script>

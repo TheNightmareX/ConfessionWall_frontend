@@ -17,6 +17,7 @@
           (v) => v.length <= 10 || '昵称太长啦',
         ]"
       ></v-text-field>
+
       <v-text-field
         v-model="data[objName].realname"
         :label="`${name}的姓名(不会显示)`"
@@ -74,8 +75,8 @@
 </template>
 
 <script>
-import { createConfession } from "../../apis/index";
-import storage from "../../storage/index";
+import { createConfession } from "../../apis";
+import storage from "../../storage";
 
 export default {
   data() {
@@ -93,24 +94,32 @@ export default {
         },
         text: "",
       },
-      tooMany: storage.confessionCount >= 1,
-      disabled: undefined,
       loading: false,
     };
+  },
+
+  computed: {
+    authed() {
+      return storage.authed;
+    },
+    tooMany() {
+      return !this.authed && storage.confessionCount >= 1;
+    },
+    disabled() {
+      return this.loading || this.tooMany;
+    },
   },
 
   methods: {
     async submit() {
       if (this.$refs.form.validate()) {
         try {
-          this.disabled = true;
           this.loading = true;
           const { sender, receiver, text } = this.data;
           await createConfession(sender, receiver, text);
           storage.confessionCount++;
           this.$router.push({ name: "home" });
         } finally {
-          this.disabled = false;
           this.loading = true;
         }
       }
@@ -125,10 +134,6 @@ export default {
         f: "purple",
       }[v];
     },
-  },
-
-  created() {
-    this.disabled = this.tooMany;
   },
 };
 </script>

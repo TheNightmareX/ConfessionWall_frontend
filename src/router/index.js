@@ -1,9 +1,10 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import Home from "../views/Home/index.vue";
-import Home_Bar from "../views/Home/bar.vue";
-import New from "../views/New/index.vue";
-import Details from "../views/Details/index.vue";
+import Home from "../views/Home";
+import Home_Bar from "../views/Home/bar";
+import New from "../views/New";
+import Details from "../views/Details";
+import Login from "../views/Login";
 
 Vue.use(VueRouter);
 
@@ -11,11 +12,11 @@ export default new VueRouter({
   routes: [
     {
       path: "/",
-      redirect: "/home/",
+      redirect: "/home",
     },
     {
       name: "home",
-      path: "/home/",
+      path: "/home",
       components: {
         default: Home,
         bar: Home_Bar,
@@ -23,13 +24,18 @@ export default new VueRouter({
     },
     {
       name: "new",
-      path: "/new/",
+      path: "/new",
       component: New,
     },
     {
       name: "details",
       path: "/details/:id",
       component: Details,
+    },
+    {
+      name: "login",
+      path: "/login",
+      component: Login,
     },
   ],
   mode: "history",

@@ -2,6 +2,7 @@ const handler = {
   get: (target, p) => (p in target ? JSON.parse(target[p]) : undefined),
   set: (target, p, v) => {
     target[p] = JSON.stringify(v);
+    return true;
   },
 };
 
