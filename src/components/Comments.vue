@@ -9,7 +9,7 @@
           }}</v-list-item-subtitle>
         </v-list-item-content>
         <v-list-item-action>
-          <v-btn icon :loading="statuses.deleting[id]" @click="del(id)">
+          <v-btn v-if="authed" icon :loading="statuses.deleting[id]" @click="del(id)">
             <v-icon>mdi-delete</v-icon>
           </v-btn>
         </v-list-item-action>
