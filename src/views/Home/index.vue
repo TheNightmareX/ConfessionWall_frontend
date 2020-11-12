@@ -29,6 +29,10 @@
           v-for="item of confessions"
           :key="item.id"
           :to="{ name: 'details', params: { id: item.id } }"
+          @delete="
+            reset();
+            loadNextPage();
+          "
         >
         </confession-card>
       </transition-group>

@@ -136,8 +136,7 @@ export default {
       try {
         this.deleting = true;
         await delConfession(this.id);
-        this.$el.remove();
-        this.$destroy();
+        this.$emit('delete')
       } finally {
         this.deleting = false;
       }
