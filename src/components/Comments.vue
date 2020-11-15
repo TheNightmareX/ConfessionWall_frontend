@@ -9,7 +9,12 @@
           }}</v-list-item-subtitle>
         </v-list-item-content>
         <v-list-item-action>
-          <v-btn v-if="authed" icon :loading="statuses.deleting[id]" @click="del(id)">
+          <v-btn
+            v-if="authed"
+            icon
+            :loading="statuses.deleting[id]"
+            @click="del(id)"
+          >
             <v-icon>mdi-delete</v-icon>
           </v-btn>
         </v-list-item-action>
@@ -117,10 +122,10 @@ export default {
           this.curPage
         );
         this.comments = Object.values(results);
-        this.totalPages = count / 5;
+        this.totalPages = Math.ceil(count / 5);
         this.$emit("load");
       } catch (e) {
-        console.error(e)
+        console.error(e);
         this.$emit("error");
       }
     },
