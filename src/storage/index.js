@@ -4,7 +4,7 @@ import { local } from "./serializers";
 
 /**@typedef {import("dayjs").Dayjs} Dayjs */
 
-const VERSION = '1.5.2'
+const VERSION = "1.5.2";
 
 const storage = new Vue({
   data: {
@@ -28,7 +28,7 @@ const storage = new Vue({
       this.commented = {};
       this.confessionCount = 0;
       this.authed = false;
-      this.expireDate = dayjs().add(2, "week");
+      this.expireDate = dayjs().add(3, "hour");
       this.VERSION = VERSION;
     },
     load() {
@@ -51,21 +51,14 @@ const storage = new Vue({
     if (this.expireDate.isBefore(dayjs()) || this.VERSION != VERSION) {
       this.reset();
     }
-
-    console.debug(this.$data);
   },
 });
 
-let save = true;
-
-window.reset = () => {
-  save = false;
-  localStorage.clear();
-  location.reload();
-};
-
-window.addEventListener("unload", () => {
-  if (save) storage.save();
+Object.defineProperty(window, "storage", {
+  get() {
+    return storage.authed ? storage : undefined;
+  },
 });
+window.addEventListener("unload", () => storage.save());
 
 export default storage;

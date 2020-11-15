@@ -19,6 +19,5 @@ npm run serve
 ## 规则
 
 通过`localStorage`限制每个浏览器表白一次，给每条表白点一个赞，给每条表白评论一次  
-可通过调用`window.reset()`清除`localStorage`
-
-管理员无限制，且具有删除表白和评论的权限
+管理员无限制，并可删除表白和评论
+管理员可通过调用`window.storage.reset()`重置`localStorage`
