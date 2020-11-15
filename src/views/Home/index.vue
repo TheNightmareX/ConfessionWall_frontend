@@ -113,13 +113,13 @@ export default {
           });
         }
         next ? this.nextPage++ : (this.nextPage = null);
+        if (this.needLoad) this.loadNextPage();
       } catch (e) {
         this.alert("数据获取失败");
         console.error(e);
       } finally {
         this.loading = false;
       }
-      if (this.needLoad) this.loadNextPage();
     },
     alert(msg) {
       this.snackbar.text = msg;
