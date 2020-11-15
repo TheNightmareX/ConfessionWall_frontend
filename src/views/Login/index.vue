@@ -18,7 +18,7 @@
 <script>
 import "vue-router";
 import storage from "../../storage";
-import { login } from "../../apis";
+import { auth } from "../../apis";
 
 export default {
   data() {
@@ -37,7 +37,7 @@ export default {
       if (!this.$refs.form.validate()) return;
       try {
         this.loggingIn = true;
-        await login(this.username, this.password);
+        await auth.login(this.username, this.password);
         storage.authed = true;
         this.$router.push({ name: "home" });
       } finally {

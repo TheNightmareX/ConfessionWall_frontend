@@ -51,7 +51,7 @@ import Vue from "vue";
 
 import ConfessionCard from "../../components/ConfessionCard";
 
-import { getConfessions } from "../../apis";
+import { confessions } from "../../apis";
 
 /**
  * @typedef {import('../../apis').Confession} Confession
@@ -79,7 +79,6 @@ export default {
       /**@type {Confession[]} */
       confessions: [],
       nextPage: 1,
-      totalPages: undefined,
       sort: undefined,
     };
   },
@@ -94,29 +93,26 @@ export default {
   methods: {
     reset() {
       this.nextPage = 1;
-      this.totalPages = undefined;
       this.confessions = [];
     },
     /**
      * Keep loading the next page until `needLoad == false`. Do nothing if it is already loading.
      */
     async loadNextPage() {
-      if (this.loading) return;
-      if (this.nextPage > this.totalPages) return;
+      if (this.loading || !this.nextPage) return;
       try {
         this.loading = true;
-        const { data, totalPages } = await getConfessions(
+        const { results, next } = await confessions.list(
           this.nextPage,
           this.sort
         );
-        for (const item of Object.values(data)) {
+        for (const item of Object.values(results)) {
           this.confessions.push(item);
           await new Promise((resolve) => {
             setTimeout(() => resolve(), 100);
           });
         }
-        this.nextPage++;
-        this.totalPages = totalPages;
+        next ? this.nextPage++ : (this.nextPage = null);
       } catch (e) {
         this.alert("数据获取失败");
         console.error(e);

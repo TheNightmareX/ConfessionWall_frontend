@@ -41,7 +41,7 @@
 
 <script>
 import storage from "../storage";
-import { createComment, getComments, delComment } from "../apis";
+import { comments } from "../apis";
 
 /**@typedef {import("../apis").Comment} Comment */
 
@@ -81,7 +81,7 @@ export default {
       if (this.commentInput.length <= 15) {
         try {
           this.commenting = true;
-          await createComment(this.confession, this.commentInput);
+          await comments.create(this.confession, this.commentInput);
           await this.load(1);
           this.$set(storage.commented, this.confession, true);
           this.$set(storage.commented, this.confession, true);
@@ -98,7 +98,7 @@ export default {
     async del(id) {
       try {
         this.$set(this.statuses.deleting, id, true);
-        await delComment(this.confession, id);
+        await comments.destroy(id);
         await this.load(1);
         this.$emit("update", this.comments.length);
       } finally {
@@ -112,14 +112,15 @@ export default {
     async load(page) {
       if (page) this.curPage = page;
       try {
-        const { data, totalPages } = await getComments(
+        const { results, count } = await comments.list(
           this.confession,
           this.curPage
         );
-        this.comments = Object.values(data);
-        this.totalPages = totalPages;
+        this.comments = Object.values(results);
+        this.totalPages = count / 5;
         this.$emit("load");
-      } catch {
+      } catch (e) {
+        console.error(e)
         this.$emit("error");
       }
     },

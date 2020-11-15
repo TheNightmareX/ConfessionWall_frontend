@@ -3,13 +3,13 @@
     <v-card @click="handleClick" :ripple="false">
       <v-card-title>
         <span :class="data.sender.sex | sexColor">
-          {{ data.sender.nickname }}
+          {{ data.sender.displayName }}
         </span>
 
         <v-icon color="red">mdi-heart</v-icon>
 
         <span :class="data.receiver.sex | sexColor">
-          {{ data.receiver.nickname }}
+          {{ data.receiver.displayName }}
         </span>
       </v-card-title>
 
@@ -76,7 +76,7 @@
 import Comments from "../components/Comments";
 
 import storage from "../storage";
-import { createLike, getConfession, delConfession } from "../apis";
+import { likes, confessions, people } from "../apis";
 
 /**@typedef {import("../apis").Confession} Confession
  */
@@ -125,7 +125,7 @@ export default {
     async like() {
       try {
         this.liking = true;
-        await createLike(this.id);
+        await likes.create(this.id);
         this.liked = true;
         this.data.likes++;
       } finally {
@@ -135,8 +135,8 @@ export default {
     async del() {
       try {
         this.deleting = true;
-        await delConfession(this.id);
-        this.$emit('delete')
+        await confessions.destroy(this.id);
+        this.$emit("delete");
       } finally {
         this.deleting = false;
       }
@@ -154,21 +154,26 @@ export default {
   filters: {
     sexColor(v) {
       return {
-        m: "blue--text",
-        f: "pink--text",
-        "": "white--text",
+        M: "blue--text",
+        F: "pink--text",
+        X: "white--text",
       }[v];
     },
   },
 
   async created() {
+    /**@type {Confession} */
+    let data;
     if (typeof this.confession == "number") {
       this.id = this.confession;
-      this.data = await getConfession(this.confession);
+      data = await confessions.retrieve(this.confession);
     } else {
-      this.data = this.confession;
-      this.id = this.data.id;
+      data = this.confession;
+      this.id = data.id;
     }
+    data.sender = await people.retrieve(data.sender);
+    data.receiver = await people.retrieve(data.receiver);
+    this.data = data;
     this.loaded = true;
   },
 };

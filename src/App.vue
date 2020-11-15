@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar color="primary" dark app>
+    <v-app-bar color="primary" app>
       <v-toolbar-title>表白墙</v-toolbar-title>
       <v-spacer></v-spacer>
       <transition>

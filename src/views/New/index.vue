@@ -1,6 +1,6 @@
 <template>
   <v-form id="container" ref="form" :disabled="disabled">
-    <span
+    <div
       v-for="[key, name, objName] in [
         [1, '你', 'sender'],
         [2, 'TA', 'receiver'],
@@ -8,7 +8,7 @@
       :key="key"
     >
       <v-text-field
-        v-model="data[objName].nickname"
+        v-model="data[objName].displayName"
         :label="`${name}的昵称`"
         :color="data[objName].sex | sexColor"
         counter="10"
@@ -18,32 +18,20 @@
         ]"
       ></v-text-field>
 
-      <v-text-field
-        v-model="data[objName].realname"
-        :label="`${name}的姓名(不会显示)`"
-        :color="data[objName].sex | sexColor"
-        counter="3"
-        :rules="[
-          (v) => !!v || '信不过的话随便填就好啦',
-          (v) => v.length <= 3 || '名字太长啦',
-        ]"
-      >
-      </v-text-field>
-
       <v-select
         v-model="data[objName].sex"
         :items="[
-          { value: 'm', text: '大帅比' },
-          { value: 'f', text: '大漂亮' },
-          { value: '', text: '外星生物' },
+          { value: 'M', text: '大帅比' },
+          { value: 'F', text: '大漂亮' },
+          { value: 'X', text: '外星生物' },
         ]"
         :label="`${name}的品种`"
         :color="data[objName].sex | sexColor"
         :item-color="data[objName].sex | sexColor"
       ></v-select>
-    </span>
+    </div>
 
-    <span>
+    <div>
       <v-textarea
         class="mb-5"
         v-model="data.text"
@@ -59,9 +47,9 @@
         ]"
       >
       </v-textarea>
-    </span>
+    </div>
 
-    <span>
+    <div>
       <v-btn
         color="primary"
         block
@@ -70,12 +58,14 @@
         :disabled="disabled"
         >{{ tooMany ? "可真够花心的" : "表白!" }}
       </v-btn>
-    </span>
+    </div>
+
+    <div></div>
   </v-form>
 </template>
 
 <script>
-import { createConfession } from "../../apis";
+import { confessions, people } from "../../apis";
 import storage from "../../storage";
 
 export default {
@@ -83,14 +73,12 @@ export default {
     return {
       data: {
         sender: {
-          nickname: "",
-          realname: "",
-          sex: "m",
+          displayName: "",
+          sex: "M",
         },
         receiver: {
-          nickname: "",
-          realname: "",
-          sex: "f",
+          displayName: "",
+          sex: "F",
         },
         text: "",
       },
@@ -116,7 +104,7 @@ export default {
         try {
           this.loading = true;
           const { sender, receiver, text } = this.data;
-          await createConfession(sender, receiver, text);
+          await confessions.create(await this.getPersonID(sender), await this.getPersonID(receiver), text);
           storage.confessionCount++;
           this.$router.push({ name: "home" });
         } finally {
@@ -124,14 +112,23 @@ export default {
         }
       }
     },
+    async getPersonID(person) {
+      let id
+      try {
+        id = await people.queryID(person);
+      } catch {
+        id = (await people.create(person)).id
+      }
+      return id
+    },
   },
 
   filters: {
     sexColor(v) {
       return {
-        "": "white",
-        m: "blue",
-        f: "purple",
+        X: "white",
+        M: "blue",
+        F: "purple",
       }[v];
     },
   },
@@ -144,6 +141,6 @@ export default {
   height: 100%;
   flex-direction: column;
   justify-content: space-around;
-  padding: 0 10% 10%;
+  padding: 0 10%;
 }
 </style>

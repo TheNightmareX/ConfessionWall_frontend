@@ -27,7 +27,7 @@
 <script>
 import Vue from "vue";
 import storage from "../../storage";
-import { logout } from "../../apis";
+import { auth } from "../../apis";
 
 export default {
   props: {
@@ -51,7 +51,7 @@ export default {
     async logout() {
       try {
         this.loggingOut = true;
-        await logout();
+        await auth.logout();
         storage.authed = false;
       } finally {
         this.loggingOut = false;
