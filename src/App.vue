@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar color="primary" app>
+    <v-app-bar color="primary" dark app>
       <v-toolbar-title>表白墙</v-toolbar-title>
       <v-spacer></v-spacer>
       <transition>
@@ -8,7 +8,7 @@
       </transition>
     </v-app-bar>
 
-    <v-bottom-navigation background-color="primary" app shift>
+    <v-bottom-navigation background-color="primary" dark app shift>
       <v-btn :to="{ name: 'home' }">
         <span>首页</span>
         <v-icon>mdi-home</v-icon>

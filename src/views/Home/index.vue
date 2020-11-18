@@ -3,7 +3,7 @@
     <transition name="progress">
       <v-progress-linear
         v-show="loading"
-        color="accent"
+        color="secondary"
         fixed
         indeterminate
       ></v-progress-linear>
@@ -11,7 +11,7 @@
 
     <v-btn
       style="bottom: 72px"
-      color="accent"
+      color="secondary"
       fab
       fixed
       right

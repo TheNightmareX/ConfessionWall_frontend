@@ -8,12 +8,12 @@ Vue.use(Vuetify);
 export default new Vuetify({
   theme: {
     themes: {
-      dark: {
-        primary: colors.purple.darken4,
-        accent: colors.orange,
+      light: {
+        primary: colors.deepPurple,
+        secondary: colors.orange,
+        accent: colors.deepOrange,
         error: colors.deepOrange,
       },
     },
-    dark: true,
   },
 });

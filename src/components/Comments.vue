@@ -1,5 +1,5 @@
 <template>
-  <v-sheet id="container" class="pb-3">
+  <v-sheet id="container" class="pb-3 elevation-1">
     <v-list dense two-line>
       <v-list-item v-for="{ id, text, creationTime } of comments" :key="id">
         <v-list-item-content>
