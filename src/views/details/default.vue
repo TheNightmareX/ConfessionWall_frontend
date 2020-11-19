@@ -1,17 +1,17 @@
 <template>
   <div id="container">
-    <confession-card class="mb-2" :confession="id"> </confession-card>
+    <confession class="mb-2" :confession="id"> </confession>
   </div>
 </template>
 
 <script>
 import "vue-router";
 
-import ConfessionCard from "../../components/ConfessionCard";
+import Confession from "../../components/Confession";
 
 export default {
   components: {
-    ConfessionCard,
+    Confession,
   },
 
   data() {

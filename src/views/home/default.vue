@@ -23,7 +23,7 @@
 
     <div id="content">
       <transition-group name="items">
-        <confession-card
+        <confession
           class="mb-4"
           :confession="item"
           v-for="item of confessions"
@@ -34,7 +34,7 @@
             loadNextPage();
           "
         >
-        </confession-card>
+        </confession>
       </transition-group>
     </div>
 
@@ -49,7 +49,7 @@
 <script>
 import Vue from "vue";
 
-import ConfessionCard from "../../components/ConfessionCard";
+import Confession from "../../components/Confession";
 
 import { confessions } from "../../apis";
 
@@ -60,7 +60,7 @@ import { confessions } from "../../apis";
 
 export default {
   components: {
-    ConfessionCard,
+    Confession,
   },
 
   props: {

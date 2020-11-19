@@ -1,12 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar color="primary" dark app>
-      <v-toolbar-title>表白墙</v-toolbar-title>
-      <v-spacer></v-spacer>
-      <transition>
-        <router-view name="bar" :bridge="bridge"></router-view>
-      </transition>
-    </v-app-bar>
+    <router-view name="bar" :bridge="bridge"></router-view>
 
     <v-bottom-navigation background-color="primary" dark app shift>
       <v-btn :to="{ name: 'home' }">

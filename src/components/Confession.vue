@@ -82,7 +82,7 @@ import { likes, confessions, people } from "../apis";
  */
 
 export default {
-  name: "ConfessionCard",
+  name: "confession",
 
   components: {
     Comments,
