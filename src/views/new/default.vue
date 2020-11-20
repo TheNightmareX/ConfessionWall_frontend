@@ -35,15 +35,14 @@
       <v-textarea
         class="mb-5"
         v-model="data.text"
-        rows="1"
-        auto-grow
+        rows="4"
         clearable
         counter="520"
-        label="你想对TA说的话"
+        placeholder="你想对TA说的话"
         color="accent"
         :rules="[
           (v) => !!v || '不想说点什么嘛',
-          (v) => v.length <= 520 || '话太多啦',
+          (v) => v && v.length <= 520 || '话太多啦',
         ]"
       >
       </v-textarea>
