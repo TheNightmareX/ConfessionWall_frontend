@@ -1,9 +1,13 @@
 import axios from "axios";
+import { api } from "./index";
 
-/**
- *
- * @param {number} confession
- */
-export async function create(confession) {
-  await axios.post(`likes/`, { confession });
-}
+export default new (class {
+  /**
+   *
+   * @param {number} confession
+   */
+  @api
+  create(confession) {
+    return axios.post(`likes/`, { confession });
+  }
+})();

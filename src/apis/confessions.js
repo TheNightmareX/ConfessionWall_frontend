@@ -1,5 +1,5 @@
 import axios from "axios";
-import { convertCase } from "./index";
+import { api } from "./index";
 
 /**
  *
@@ -13,42 +13,43 @@ import { convertCase } from "./index";
  * @property {string} creationTime
  */
 
-/**
- *
- * @param {number} id
- * @returns {Confession}
- */
-export async function retrieve(id) {
-  return convertCase((await axios.get(`confessions/${id}`)).data, "camel");
-}
-/**
- *
- * @param {number} page
- * @param {'latest' | 'earlest' | 'hottest' | 'coldest'} sort
- * @param {number} person - ID
- * @returns {Promise<{ results: Object<number, Confession> , count: number, next: string, previous: string }>}
- */
-export async function list(page = 1, sort = "latest", person = undefined) {
-  return convertCase(
-    (await axios.get(`confessions/`, { params: { page, sort, person } })).data,
-    "camel"
-  );
-}
-
-/**
- *
- * @param {number} sender - pk
- * @param {number} receiver - pk
- * @param {string} text
- */
-export async function create(sender, receiver, text) {
-  return await axios.post("confessions/", { sender, receiver, text });
-}
-
-/**
- *
- * @param {number} id
- */
-export async function destroy(id) {
-  return await axios.delete(`confessions/${id}`);
-}
+export default new (class {
+  /**
+   *
+   * @param {number} id
+   * @returns {Confession}
+   */
+  @api
+  retrieve(id) {
+    return axios.get(`confessions/${id}`);
+  }
+  /**
+   *
+   * @param {number} page
+   * @param {'latest' | 'earlest' | 'hottest' | 'coldest'} sort
+   * @param {number} person - ID
+   * @returns {Promise<{ results: Object<number, Confession> , count: number, next: string, previous: string }>}
+   */
+  @api
+  list(page = 1, sort = "latest", person = undefined) {
+    return axios.get(`confessions/`, { params: { page, sort, person } });
+  }
+  /**
+   *
+   * @param {number} sender - pk
+   * @param {number} receiver - pk
+   * @param {string} text
+   */
+  @api
+  create(sender, receiver, text) {
+    return axios.post("confessions/", { sender, receiver, text });
+  }
+  /**
+   *
+   * @param {number} id
+   */
+  @api
+  destroy(id) {
+    return axios.delete(`confessions/${id}`);
+  }
+})();

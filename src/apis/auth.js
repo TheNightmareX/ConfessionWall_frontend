@@ -1,20 +1,23 @@
 import axios from "axios";
+import { api } from "./index";
 
-/**
- *
- * @param {string} username
- * @param {string} password
- * @returns {string} username
- */
-export async function login(username, password) {
-  return (await axios.post("auth", { action: "login", username, password }))
-    .data;
-}
-
-/**
- *
- * @returns {string} username
- */
-export async function logout() {
-  return await axios.post("auth", { action: "logout" });
-}
+export default new (class {
+  /**
+   *
+   * @param {string} username
+   * @param {string} password
+   * @returns {string} username
+   */
+  @api
+  login(username, password) {
+    return axios.post("auth", { action: "login", username, password });
+  }
+  /**
+   *
+   * @returns {string} username
+   */
+  @api
+  logout() {
+    return axios.post("auth", { action: "logout" });
+  }
+})();
