@@ -17,18 +17,30 @@ export async function queryID(person) {
 }
 
 /**
- * 
- * @param {number} id 
+ *
+ * @param {number} id
  * @returns {Person}
  */
 export async function retrieve(id) {
-  return convertCase((await axios.get(`people/${id}`)).data, 'camel')
+  return convertCase((await axios.get(`people/${id}`)).data, "camel");
+}
+
+/**
+ *
+ * @param {string} displayName - At least 2 letters.
+ * @returns {{count: number, next: string, previous: string, results: Object<number, Person>}}
+ */
+export async function search(displayName) {
+  return convertCase(
+    (await axios.get("people/", { params: { contains: displayName } })).data,
+    "camel"
+  );
 }
 
 /**
  *
  * @param {Person} person
- * @returns {person}
+ * @returns {Person}
  */
 export async function create(person) {
   return (await axios.post("people/", convertCase(person, "snake"))).data;

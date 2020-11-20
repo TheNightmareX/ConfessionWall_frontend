@@ -171,8 +171,12 @@ export default {
       data = this.confession;
       this.id = data.id;
     }
-    data.sender = await people.retrieve(data.sender);
-    data.receiver = await people.retrieve(data.receiver);
+    const sender = storage.cache.people[data.sender] || await people.retrieve(data.sender);
+    const receiver = storage.cache.people[data.receiver] || await people.retrieve(data.receiver);
+    this.$set(storage.cache.people, data.sender, sender);
+    this.$set(storage.cache.people, data.receiver, receiver);
+    data.sender = sender;
+    data.receiver = receiver;
     this.data = data;
     this.loaded = true;
   },

@@ -23,12 +23,14 @@ export async function retrieve(id) {
 }
 /**
  *
- * @param {'latest' | 'earlest' | 'hottest' | 'coldest'}
+ * @param {number} page
+ * @param {'latest' | 'earlest' | 'hottest' | 'coldest'} sort
+ * @param {number} person - ID
  * @returns {Promise<{ results: Object<number, Confession> , count: number, next: string, previous: string }>}
  */
-export async function list(page = 1, sort = "latest") {
+export async function list(page = 1, sort = "latest", person = undefined) {
   return convertCase(
-    (await axios.get(`confessions/`, { params: { page, sort } })).data,
+    (await axios.get(`confessions/`, { params: { page, sort, person } })).data,
     "camel"
   );
 }

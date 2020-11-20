@@ -3,8 +3,9 @@ import Vue from "vue";
 import { local } from "./serializers";
 
 /**@typedef {import("dayjs").Dayjs} Dayjs */
+/**@typedef {import("../apis").Person} Person */
 
-const VERSION = "1.5.2";
+const VERSION = "1.5.4";
 
 const storage = new Vue({
   data: {
@@ -16,6 +17,8 @@ const storage = new Vue({
     confessionCount: undefined,
     /**@type {boolean} */
     authed: undefined,
+    /**@type {{ people: Object<number, Person>} */
+    cache: undefined,
     /**@type {Dayjs} */
     expireDate: undefined,
     /**@type {string} */
@@ -28,14 +31,13 @@ const storage = new Vue({
       this.commented = {};
       this.confessionCount = 0;
       this.authed = false;
+      this.cache = { people: {} };
       this.expireDate = dayjs().add(3, "hour");
       this.VERSION = VERSION;
     },
     load() {
       for (const k in this.$data) {
-        if (k in local) {
-          this[k] = local[k];
-        }
+        if (k in local) this[k] = local[k];
       }
       this.expireDate = dayjs(this.expireDate);
     },

@@ -80,11 +80,16 @@ export default {
       confessions: [],
       nextPage: 1,
       sort: undefined,
+      search: undefined,
     };
   },
 
   watch: {
     sort() {
+      this.reset();
+      this.loadNextPage();
+    },
+    search() {
       this.reset();
       this.loadNextPage();
     },
@@ -104,7 +109,8 @@ export default {
         this.loading = true;
         const { results, next } = await confessions.list(
           this.nextPage,
-          this.sort
+          this.sort,
+          this.search
         );
         for (const item of Object.values(results)) {
           this.confessions.push(item);
@@ -130,6 +136,8 @@ export default {
   created() {
     this.bridge.$off("sort");
     this.bridge.$on("sort", (sort) => (this.sort = sort));
+    this.bridge.$off("search");
+    this.bridge.$on("search", (personID) => (this.search = personID));
   },
 
   mounted() {
