@@ -1,11 +1,10 @@
 import dayjs from "dayjs";
 import Vue from "vue";
-import { local } from "./serializers";
 
 /**@typedef {import("dayjs").Dayjs} Dayjs */
 /**@typedef {import("../apis").Person} Person */
 
-const VERSION = "1.5.4";
+const VERSION = "1.5.5";
 
 const storage = new Vue({
   data: {
@@ -21,8 +20,6 @@ const storage = new Vue({
     cache: undefined,
     /**@type {Dayjs} */
     expireDate: undefined,
-    /**@type {string} */
-    VERSION: undefined,
   },
 
   methods: {
@@ -33,9 +30,9 @@ const storage = new Vue({
       this.authed = false;
       this.cache = { people: {} };
       this.expireDate = dayjs().add(3, "hour");
-      this.VERSION = VERSION;
     },
     load() {
+      const local = JSON.parse(localStorage[VERSION] || {})
       for (const k in this.$data) {
         if (k in local) this[k] = local[k];
       }
@@ -43,14 +40,15 @@ const storage = new Vue({
     },
     save() {
       this.expireDate = this.expireDate.format();
-      Object.assign(local, this.$data);
+      localStorage.clear()
+      localStorage[VERSION] = JSON.stringify(this.$data)
     },
   },
 
   created() {
     this.reset();
     this.load();
-    if (this.expireDate.isBefore(dayjs()) || this.VERSION != VERSION) {
+    if (this.expireDate.isBefore(dayjs())) {
       this.reset();
     }
   },
