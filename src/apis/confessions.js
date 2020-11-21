@@ -1,6 +1,7 @@
 import axios from "axios";
 import { api } from "./index";
 
+/**@typedef {import("./people").Person} Person */
 /**
  *
  * @typedef {Object} Confession
@@ -11,6 +12,8 @@ import { api } from "./index";
  * @property {number} likes
  * @property {number} comments
  * @property {string} creationTime
+ * @property {Person} senderDetail
+ * @property {Person} receiverDetail
  */
 
 export default new (class {

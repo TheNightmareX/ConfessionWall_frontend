@@ -103,22 +103,13 @@ export default {
         try {
           this.loading = true;
           const { sender, receiver, text } = this.data;
-          await confessions.create(await this.getPersonID(sender), await this.getPersonID(receiver), text);
+          await confessions.create((await people.create(sender)).id, (await people.create(receiver)).id, text);
           storage.confessionCount++;
           this.$router.push({ name: "home" });
         } finally {
           this.loading = true;
         }
       }
-    },
-    async getPersonID(person) {
-      let id
-      try {
-        id = await people.queryID(person);
-      } catch {
-        id = (await people.create(person)).id
-      }
-      return id
     },
   },
 

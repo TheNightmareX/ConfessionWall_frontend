@@ -2,14 +2,14 @@
   <div v-if="loaded">
     <v-card :ripple="false" @click="handleClick">
       <v-card-title>
-        <span :class="data.sender.sex | sexColor"
-          >{{ data.sender.displayName }}
+        <span :class="data.senderDetail.sex | sexColor"
+          >{{ data.senderDetail.displayName }}
         </span>
 
         <v-icon color="red">mdi-heart</v-icon>
 
-        <span :class="data.receiver.sex | sexColor"
-          >{{ data.receiver.displayName }}
+        <span :class="data.receiverDetail.sex | sexColor"
+          >{{ data.receiverDetail.displayName }}
         </span>
       </v-card-title>
 
@@ -61,7 +61,7 @@
           absolute
           :loading="deleting"
           @click="del"
-          style="top: 3px; right: 3px; z-index: 3;"
+          style="top: 3px; right: 3px; z-index: 3"
         >
           <v-icon>mdi-delete</v-icon>
         </v-btn>
@@ -85,7 +85,7 @@
 import Comments from "../components/Comments";
 
 import storage from "../storage";
-import { likes, confessions, people } from "../apis";
+import { likes, confessions } from "../apis";
 
 /**@typedef {import("../apis").Confession} Confession */
 
@@ -180,15 +180,8 @@ export default {
       data = this.confession;
       this.id = data.id;
     }
-    const sender =
-      storage.cache.people[data.sender] || (await people.retrieve(data.sender));
-    const receiver =
-      storage.cache.people[data.receiver] ||
-      (await people.retrieve(data.receiver));
-    this.$set(storage.cache.people, data.sender, sender);
-    this.$set(storage.cache.people, data.receiver, receiver);
-    data.sender = sender;
-    data.receiver = receiver;
+    this.$set(storage.cache.people, data.senderDetail.id, data.senderDetail);
+    this.$set(storage.cache.people, data.receiverDetail.id, data.receiverDetail);
     this.data = data;
     this.loaded = true;
   },

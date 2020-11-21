@@ -114,9 +114,7 @@ export default {
         );
         for (const item of Object.values(results)) {
           this.confessions.push(item);
-          await new Promise((resolve) => {
-            setTimeout(() => resolve(), 100);
-          });
+          await new Promise((r) => setTimeout(r, 100));
         }
         next ? this.nextPage++ : (this.nextPage = null);
         if (this.needLoad) this.loadNextPage();

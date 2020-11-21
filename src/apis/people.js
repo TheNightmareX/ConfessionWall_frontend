@@ -6,15 +6,6 @@ import { api } from "./index";
 export default new (class {
   /**
    *
-   * @param {Person} person
-   * @returns {number}
-   */
-  @api
-  queryID(person) {
-    return axios.get("people/id/", { params: person });
-  }
-  /**
-   *
    * @param {number} id
    * @returns {Person}
    */
