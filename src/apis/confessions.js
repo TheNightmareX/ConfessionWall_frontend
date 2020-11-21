@@ -24,7 +24,7 @@ export default new (class {
    */
   @api
   retrieve(id) {
-    return axios.get(`confessions/${id}`);
+    return axios.get(`confessions/${id}/`);
   }
   /**
    *
@@ -53,6 +53,6 @@ export default new (class {
    */
   @api
   destroy(id) {
-    return axios.delete(`confessions/${id}`);
+    return axios.delete(`confessions/${id}/`);
   }
 })();

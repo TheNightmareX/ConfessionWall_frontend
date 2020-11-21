@@ -27,6 +27,6 @@ export default new (class {
    */
   @api
   destroy(comment) {
-    return axios.delete(`comments/${comment}`);
+    return axios.delete(`comments/${comment}/`);
   }
 })();
