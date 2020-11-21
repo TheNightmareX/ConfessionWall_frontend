@@ -17,7 +17,7 @@ export default new (class {
   /**
    *
    * @param {number} id
-   * @returns {Confession}
+   * @returns {Promise<Confession>}
    */
   @api
   retrieve(id) {

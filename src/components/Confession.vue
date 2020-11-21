@@ -1,21 +1,25 @@
 <template>
   <div v-if="loaded">
-    <v-card @click="handleClick" :ripple="false">
+    <v-card :ripple="false" @click="handleClick">
       <v-card-title>
-        <span :class="data.sender.sex | sexColor">
-          {{ data.sender.displayName }}
+        <span :class="data.sender.sex | sexColor"
+          >{{ data.sender.displayName }}
         </span>
 
         <v-icon color="red">mdi-heart</v-icon>
 
-        <span :class="data.receiver.sex | sexColor">
-          {{ data.receiver.displayName }}
+        <span :class="data.receiver.sex | sexColor"
+          >{{ data.receiver.displayName }}
         </span>
       </v-card-title>
 
       <v-card-subtitle>{{ data.creationTime | datetime }}</v-card-subtitle>
 
-      <v-card-text style="white-space: pre-line">{{ data.text }}</v-card-text>
+      <v-card-text
+        :class="{ 'text-truncate': !expanded }"
+        :style="{ 'white-space': expanded ? 'pre-wrap' : 'initial' }"
+        >{{ data.text }}
+      </v-card-text>
 
       <v-card-actions ref="actions" class="d-flex justify-space-between">
         <span>
@@ -29,6 +33,11 @@
           </v-btn>
           <span>{{ data.likes }}</span>
         </span>
+
+        <span v-show="!expanded" @click="expanded = !expanded">
+          <v-btn text small>展开<v-icon>mdi-chevron-down</v-icon></v-btn>
+        </span>
+
         <span>
           <v-btn
             icon
@@ -78,8 +87,7 @@ import Comments from "../components/Comments";
 import storage from "../storage";
 import { likes, confessions, people } from "../apis";
 
-/**@typedef {import("../apis").Confession} Confession
- */
+/**@typedef {import("../apis").Confession} Confession */
 
 export default {
   name: "confession",
@@ -104,6 +112,7 @@ export default {
       commentsOpened: false,
       deleting: false,
       loaded: false,
+      expanded: false,
     };
   },
 
@@ -171,8 +180,11 @@ export default {
       data = this.confession;
       this.id = data.id;
     }
-    const sender = storage.cache.people[data.sender] || await people.retrieve(data.sender);
-    const receiver = storage.cache.people[data.receiver] || await people.retrieve(data.receiver);
+    const sender =
+      storage.cache.people[data.sender] || (await people.retrieve(data.sender));
+    const receiver =
+      storage.cache.people[data.receiver] ||
+      (await people.retrieve(data.receiver));
     this.$set(storage.cache.people, data.sender, sender);
     this.$set(storage.cache.people, data.receiver, receiver);
     data.sender = sender;
@@ -183,5 +195,5 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 </style>
