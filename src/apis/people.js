@@ -11,7 +11,7 @@ export default new (class {
    */
   @api
   queryID(person) {
-    return axios.get("people/id", { params: person });
+    return axios.get("people/id/", { params: person });
   }
   /**
    *
@@ -20,7 +20,7 @@ export default new (class {
    */
   @api
   retrieve(id) {
-    return axios.get(`people/${id}`);
+    return axios.get(`people/${id}/`);
   }
   /**
    *
