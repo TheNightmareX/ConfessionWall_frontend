@@ -165,7 +165,7 @@ export default {
       return {
         M: "blue--text",
         F: "pink--text",
-        X: "white--text",
+        X: "green--text",
       }[v];
     },
   },

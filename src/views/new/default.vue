@@ -125,7 +125,7 @@ export default {
   filters: {
     sexColor(v) {
       return {
-        X: "white",
+        X: "green",
         M: "blue",
         F: "purple",
       }[v];

@@ -12,7 +12,7 @@ export default new Vuetify({
         primary: colors.deepPurple,
         secondary: colors.orange,
         accent: colors.deepOrange,
-        error: colors.deepOrange,
+        error: colors.red,
       },
     },
   },
