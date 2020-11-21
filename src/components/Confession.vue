@@ -61,7 +61,7 @@
           absolute
           :loading="deleting"
           @click="del"
-          style="top: 3px; right: 3px"
+          style="top: 3px; right: 3px; z-index: 3;"
         >
           <v-icon>mdi-delete</v-icon>
         </v-btn>
