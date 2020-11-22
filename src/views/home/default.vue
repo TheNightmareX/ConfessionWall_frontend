@@ -148,7 +148,9 @@ export default {
         this.needLoad = false;
       }
     });
-    observer.observe(this.$refs.trigger);
+    setTimeout(() => { // magic...
+      observer.observe(this.$refs.trigger);
+    }, 0);
   },
 };
 </script>
